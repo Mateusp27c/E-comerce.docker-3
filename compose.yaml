@@ -1,0 +1,27 @@
+services:
+  banco:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ecommerce
+      POSTGRES_PASSWORD: ecommerce
+      POSTGRES_DB: ecommerce
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U ecommerce -d ecommerce"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    # sem "ports": o banco só é acessível pela rede interna do Compose
+
+  api:
+    build: .
+    env_file: .env
+    ports:
+      - "3000:3000"
+    depends_on:
+      banco:
+        condition: service_healthy
+
+volumes:
+  pgdata:
