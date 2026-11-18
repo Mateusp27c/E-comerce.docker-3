@@ -26,3 +26,36 @@ curl -X POST http://localhost:3000/orders \
     "items": [{ "productId": 1, "quantity": 1 }],
     "paymentMethod": "pix"
   }'
+
+  A resposta traz o orderId. Busque o pedido por esse id:
+
+
+
+curl -i http://localhost:3000/orders/1      # 200 com o pedido
+curl -i http://localhost:3000/orders/9999   # 404, pedido não existe
+
+
+
+4. Parar e subir de novo
+
+
+docker compose down      # para os containers; os pedidos ficam salvos no volume pgdata
+docker compose up        # sobe de novo; o GET /orders/1 continua funcionando
+docker compose down -v   # para e APAGA o volume (zera o banco)
+
+
+
+Modos dev e test
+
+
+
+Troque o valor de APP_ENV no .env e rode docker compose up --build de novo.
+
+
+
+
+
+APP_ENV=dev (padrão): grava os pedidos no PostgreSQL e envia o e-mail pelo Ethereal. O link de visualização vem no campo emailPreview.
+
+
+APP_ENV=test: guarda os pedidos em memória (somem ao reiniciar) e mostra o e-mail no console.
